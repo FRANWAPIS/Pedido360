@@ -1,4 +1,3 @@
-
 package com.Pedido360.pedidos;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -22,16 +21,24 @@ public class RabbitMqTestController {
             {
               "event": "order.created",
               "orderId": 1001,
-              "mensaje": "Prueba de RabbitMQ"
+              "productoId": 1,
+              "cantidad": 2
             }
             """;
 
-        rabbitTemplate.convertAndSend(
-            "tienda.events",
-            "order.created",
-            evento
-        );
-
-        return "Evento order.created enviado a RabbitMQ";
+        try {
+            rabbitTemplate.convertAndSend(
+                "tienda.events",
+                "order.created",
+                evento
+            );
+            return "Evento order.created enviado a RabbitMQ";
+        } catch (Exception e) {
+            Throwable causa = e;
+            while (causa.getCause() != null) {
+                causa = causa.getCause();
+            }
+            return "ERROR: " + causa.getClass().getSimpleName() + " - " + causa.getMessage();
+        }
     }
 }
